@@ -5,13 +5,14 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="easykubeflow",
-    version="0.0.4",
+    version="0.0.5",
     author="Le Tuan Vu",
     author_email="ltnv24@gmail.com",
     description="High level of kubeflow SDK",
     long_description=long_description,
     long_description_content_type="text/markdown",
     packages=['easykubeflow'],
+    install_requires=['kfp'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",
