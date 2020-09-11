@@ -1,0 +1,5 @@
+build/
+dist/
+easykubeflow.egg-info/
+**/.ipynb_checkpoints/
+**/__pycache__/
