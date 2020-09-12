@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: example-
+  annotations: {pipelines.kubeflow.org/kfp_sdk_version: 1.0.0, pipelines.kubeflow.org/pipeline_compilation_time: '2020-09-12T06:39:48.397822',
+    pipelines.kubeflow.org/pipeline_spec: '{"description": "Dummy example pipeline",
+      "inputs": [{"name": "lst", "type": "JsonArray"}], "name": "Example"}'}
+  labels: {pipelines.kubeflow.org/kfp_sdk_version: 1.0.0}
+spec:
+  entrypoint: example
+  templates:
+  - name: example
+    dag:
+      tasks:
+      - {name: print-message, template: print-message}
+      - name: print-message-2
+        template: print-message-2
+        dependencies: [print-message]
+  - name: print-message
+    container:
+      args: [echo task0]
+      command: [sh, -c]
+      image: asia.gcr.io/vinid-data-science-np/vu-example/base:1.0.0
+  - name: print-message-2
+    container:
+      args: [echo task1]
+      command: [sh, -c]
+      image: asia.gcr.io/vinid-data-science-np/vu-example/base:1.0.0
+  arguments:
+    parameters:
+    - {name: lst}
+  serviceAccountName: pipeline-runner

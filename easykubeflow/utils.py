@@ -45,7 +45,7 @@ class Utils:
         >>> client = kfp.Client()
         >>> Utils(client)
         """
-        self.page_size = 100
+        self.page_size = 500
         self.client = client
         self.client.get_experiment_by_name = self.get_experiment_by_name
         self.client.get_run_by_name = self.get_run_by_name
@@ -114,7 +114,7 @@ class Utils:
             Name of run.
         level: str
             If `hard`, retrieve run till the last page.
-            If `easy`, find the latest runs in the first page with 100 elements.
+            If `easy`, find the latest runs in the first page with `page_size` elements.
             
         Returns
         -------
@@ -123,7 +123,7 @@ class Utils:
         """
         run_ids = []
         if level == 'easy':
-            for run in self.client.runs.list_runs(page_size=100).runs:
+            for run in self.client.runs.list_runs(page_size=self.page_size).runs:
                 if run.name == name:
                     run_ids.append(run.id)
         elif level == 'hard':
@@ -148,7 +148,7 @@ class Utils:
         level: str
             If `hard`, retrieve run till the last page even if the exp_name has been removed.
             If `normal`, retrieve run till the last page when exp_name still exists.
-            If `easy`, find the latest runs in the first page with 100 elements.
+            If `easy`, find the latest runs in the first page with `page_size` elements.
             
         Returns
         -------
@@ -157,7 +157,7 @@ class Utils:
         """
         run_name_ids = []
         if level == 'easy':
-            for run in self.client.runs.list_runs(page_size=100).runs:
+            for run in self.client.runs.list_runs(page_size=self.page_size).runs:
                 if run.resource_references[0].name == exp_name:
                     run_name_ids.append({'name': run.name, 'id': run.id})
         elif level == 'normal':
@@ -225,7 +225,7 @@ class Utils:
             Name of run to be deleted.
         level: str
             If `hard`, retrieve run till the last page.
-            If `easy`, find the latest runs in the first page with 100 elements.
+            If `easy`, find the latest runs in the first page with `page_size` elements.
         """
         run_ids = self.get_run_by_name(name, level)
         print(f'Total: {len(run_ids)} runs')
@@ -243,7 +243,7 @@ class Utils:
         level: str
             If `hard`, retrieve run till the last page even if the exp_name has been removed.
             If `normal`, retrieve run till the last page when exp_name still exists.
-            If `easy`, find the latest runs in the first page with 100 elements.
+            If `easy`, find the latest runs in the first page with `page_size` elements.
         """
         name_ids = self.get_runs_by_experiment(exp_name, level)
         print(f'Total: {len(name_ids)} runs')
