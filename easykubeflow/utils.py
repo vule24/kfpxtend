@@ -29,6 +29,11 @@ def _exception_handler(func):
             return None
     return _wrapper
 
+
+def show_help():
+    print('Give easykubeflow a \U0001F31F on github\nLink to Examples https://github.com/vule24/easykubeflow/tree/master/examples')
+    
+
 class Utils:
     
     def __init__(self, client):
@@ -56,7 +61,10 @@ class Utils:
         self.client.delete_run_by_name = self.delete_run_by_name
         self.client.delete_runs_by_experiment = self.delete_runs_by_experiment
         self.client.upload_pipeline_version = self.upload_pipeline_version
-
+        
+        print('easykubeflow.show_help() to get examples source')
+        
+        
     @_exception_handler
     def get_pipeline_by_name(self, name):
         """Get pipeline using its name.
