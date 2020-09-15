@@ -31,7 +31,14 @@ def _exception_handler(func):
 
 
 def show_help():
-    print('Give easykubeflow a \U0001F31F on github\nLink to Examples https://github.com/vule24/easykubeflow/tree/master/examples')
+    mess = [u'Give easykubeflow a \U0001F31F on github', 'Link to Examples https://github.com/vule24/easykubeflow/tree/master/examples']
+    _max = max(map(len, mess))
+    _max = 40 if _max < 40 else _max + 20
+    print('╔' + '═'*_max + '╗')
+    for i,m in enumerate(mess):
+        _left = (_max - len(m))//2 + 1
+        print(' '*_left + m)
+    print('╚' + '═'*_max + '╝')
     
 
 class Utils:
@@ -62,7 +69,12 @@ class Utils:
         self.client.delete_runs_by_experiment = self.delete_runs_by_experiment
         self.client.upload_pipeline_version = self.upload_pipeline_version
         
-        print('easykubeflow.show_help() to get examples source')
+        mess = 'easykubeflow.show_help() to get examples source'
+        _max = 40 if len(mess) < 40 else len(mess) + 20
+        _left = (_max - len(mess))//2 + 1
+        print('╔' + '═'*_max + '╗')
+        print('║' + ' '*_left + mess + ' '*(_max-len(mess)-_left) + '║')
+        print('╚' + '═'*_max + '╝')
         
         
     @_exception_handler

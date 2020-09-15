@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="easykubeflow",
-    version="0.0.7",
+    version="0.0.8",
     author="Le Tuan Vu",
     author_email="ltnv24@gmail.com",
     description="High level of kubeflow SDK",
