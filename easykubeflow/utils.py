@@ -31,7 +31,10 @@ def _exception_handler(func):
 
 
 def show_help():
-    mess = [u'Give easykubeflow a \U0001F31F on github', 'Link to Examples https://github.com/vule24/easykubeflow/tree/master/examples']
+    mess = ['Give easykubeflow a \U0001F31F on github', 
+            'Examples:', 
+            'https://nbviewer.jupyter.org/github/vule24/easykubeflow/blob/master/examples/basic.ipynb',
+            'https://nbviewer.jupyter.org/github/vule24/easykubeflow/blob/master/examples/advance.ipynb']
     _max = max(map(len, mess))
     _max = 40 if _max < 40 else _max + 20
     print('╔' + '═'*_max + '╗')
