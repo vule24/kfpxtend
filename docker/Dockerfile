@@ -23,7 +23,9 @@ RUN pip3 install --upgrade pip && \
     pip3 install https://storage.googleapis.com/ml-pipeline/release/latest/kfp.tar.gz --upgrade && \
     pip3 install -U \
         easykubeflow \
-        ipywidgets 
+        ipywidgets \
+        kafka-python confluent-kafka \
+        elasticsearch
         # kubeflow-kale # ROK required
 
 # Install Jupyter Lab Extensions
