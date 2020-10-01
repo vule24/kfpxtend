@@ -16,17 +16,20 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+# Install code-server
+RUN curl -fsSL https://code-server.dev/install.sh | sh
+
 # Install base python3 packages
 RUN pip3 install --upgrade pip && \
     pip3 install --upgrade jupyterlab && \
-    # pip3 install --upgrade "jupyterlab<2.0.0" && \ # use with kubeflow-kale and comment the above line
     pip3 install https://storage.googleapis.com/ml-pipeline/release/latest/kfp.tar.gz --upgrade && \
     pip3 install -U \
         easykubeflow \
         ipywidgets \
+        jupyter-server-proxy jupyter-vscode-proxy \
         kafka-python confluent-kafka \
         elasticsearch
-        # kubeflow-kale # ROK required
+        
 RUN pip3 uninstall -y enum34
 RUN pip3 install --upgrade elyra
 
@@ -34,7 +37,7 @@ RUN pip3 install --upgrade elyra
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN jupyter labextension install @jupyter-widgets/jupyterlab-manager --no-build && \
     jupyter labextension install @aquirdturtle/collapsible_headings --no-build && \
-    # jupyter labextension install kubeflow-kale-labextension --no-build && \ # ROK required
+    jupyter labextension install @jupyterlab/server-proxy --no-build
     jupyter lab build && \
         jupyter lab clean && \
         jlpm cache clean && \
