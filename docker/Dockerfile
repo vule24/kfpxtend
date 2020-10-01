@@ -24,6 +24,7 @@ RUN pip3 install --upgrade pip && \
     pip3 install -U \
         easykubeflow \
         ipywidgets \
+        jupyterlab-git \
         kafka-python confluent-kafka \
         elasticsearch
         # kubeflow-kale # ROK required
@@ -32,6 +33,7 @@ RUN pip3 install --upgrade pip && \
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN jupyter labextension install @jupyter-widgets/jupyterlab-manager --no-build && \
     jupyter labextension install @jupyterlab/toc --no-build && \
+    jupyter labextension install @aquirdturtle/collapsible_headings --no-build && \
     # jupyter labextension install kubeflow-kale-labextension --no-build && \ # ROK required
     jupyter lab build && \
         jupyter lab clean && \
@@ -65,3 +67,7 @@ CMD ["zsh","-c", "sudo rm .zshrc .tmux.conf && \
         jupyter lab --notebook-dir=${HOME} --ip=0.0.0.0 --no-browser \
             --allow-root --port=8888 --LabApp.token='' --LabApp.password='' \
             --LabApp.allow_origin='*' --LabApp.base_url=${NB_PREFIX}"]
+
+zsh -c "jupyter lab --notebook-dir=${HOME} --ip=0.0.0.0 --no-browser \
+            --allow-root --port=8888 --LabApp.token='' --LabApp.password='' \
+            --LabApp.allow_origin='*' --LabApp.base_url=${NB_PREFIX}"
