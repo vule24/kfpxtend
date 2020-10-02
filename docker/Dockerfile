@@ -17,7 +17,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Install code-server
-RUN curl -fsSL https://code-server.dev/install.sh | sh
+RUN bash -c "curl -fsSL https://code-server.dev/install.sh | sh"
 
 # Install base python3 packages
 RUN pip3 install --upgrade pip && \
@@ -26,9 +26,9 @@ RUN pip3 install --upgrade pip && \
     pip3 install -U \
         easykubeflow \
         ipywidgets \
-        jupyter-server-proxy jupyter-vscode-proxy \
+        jupyter-server-proxy jupyter-vscode-proxy pylint\
         kafka-python confluent-kafka \
-        elasticsearch
+        elasticsearch \
         
 RUN pip3 uninstall -y enum34
 RUN pip3 install --upgrade elyra
@@ -37,7 +37,7 @@ RUN pip3 install --upgrade elyra
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN jupyter labextension install @jupyter-widgets/jupyterlab-manager --no-build && \
     jupyter labextension install @aquirdturtle/collapsible_headings --no-build && \
-    jupyter labextension install @jupyterlab/server-proxy --no-build
+    jupyter labextension install @jupyterlab/server-proxy --no-build && \
     jupyter lab build && \
         jupyter lab clean && \
         jlpm cache clean && \
