@@ -67,7 +67,3 @@ CMD ["zsh","-c", "sudo rm .zshrc .tmux.conf && \
         jupyter lab --notebook-dir=${HOME} --ip=0.0.0.0 --no-browser \
             --allow-root --port=8888 --LabApp.token='' --LabApp.password='' \
             --LabApp.allow_origin='*' --LabApp.base_url=${NB_PREFIX}"]
-
-zsh -c "jupyter lab --notebook-dir=${HOME} --ip=0.0.0.0 --no-browser \
-            --allow-root --port=8888 --LabApp.token='' --LabApp.password='' \
-            --LabApp.allow_origin='*' --LabApp.base_url=${NB_PREFIX}"
