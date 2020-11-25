@@ -17,17 +17,17 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Install base python3 packages
+RUN pip3 uninstall -y enum34
 RUN pip3 install --upgrade pip && \
     pip3 install --upgrade jupyterlab && \
-    # pip3 install --upgrade "jupyterlab<2.0.0" && \ # use with kubeflow-kale and comment the above line
     pip3 install https://storage.googleapis.com/ml-pipeline/release/latest/kfp.tar.gz --upgrade && \
     pip3 install -U \
         easykubeflow \
         ipywidgets \
         jupyterlab-git \
         kafka-python confluent-kafka \
-        elasticsearch
-        # kubeflow-kale # ROK required
+        elasticsearch \
+        pandas
 
 # Install Jupyter Lab Extensions
 ENV NODE_OPTIONS="--max-old-space-size=4096"

@@ -295,7 +295,7 @@ class Utils:
             self.client.upload_pipeline(filepath, pipeline_name)
             print('Uploaded new pipeline')
         except:
-            pipelineid = self.get_pipeline_by_name(pipeline_name)[0]
+            pipelineid = self.get_pipeline_by_name(pipeline_name)
             self.client.pipeline_uploads.upload_pipeline_version(
                 filepath,
                 pipelineid=pipelineid,
