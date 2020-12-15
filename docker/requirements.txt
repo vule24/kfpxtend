@@ -1,0 +1,56 @@
+joblib
+apache-beam[gcp]
+numpy
+pandas
+scipy
+# visualization
+matplotlib
+seaborn
+plotly
+yellowbrick
+# cloud service
+google-cloud-bigquery
+google-cloud-storage
+pandas-gbq
+pyarrow
+cloudservice
+# Preprocessing
+category_encoders
+imbalanced-learn
+# MLLIB
+scikit-learn
+lightgbm
+xgboost
+lightfm
+faiss-cpu
+scikit-image
+Boruta
+catboost
+scikit-surprise
+sklearn-pandas
+eli5
+shap
+
+# DeepLIB
+tensorflow
+torch
+torchvision
+pytorch-lightning
+
+# Tuning
+optuna
+ray
+
+
+# other
+tqdm
+pyyaml
+pytz
+jsonlines
+python-Levenshtein
+datatable
+
+
+elasticsearch
+kafka-python 
+confluent-kafka 

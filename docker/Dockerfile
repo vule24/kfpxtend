@@ -1,5 +1,6 @@
 ARG IMAGE_TYPE="gpu"
-FROM gcr.io/kubeflow-images-public/tensorflow-2.1.0-notebook-${IMAGE_TYPE}:v-base-1caade5-1228430207824695301
+# FROM gcr.io/kubeflow-images-public/tensorflow-2.1.0-notebook-${IMAGE_TYPE}:v-base-1caade5-1228430207824695301
+FROM python:3.8
 
 ARG NB_USER=jovyan
 
@@ -7,30 +8,21 @@ ARG NB_USER=jovyan
 
 USER root
 
-RUN add-apt-repository ppa:deadsnakes/ppa
-RUN apt update && apt-get install -y python3.8
-RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.6 1
-RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.8 2
-RUN update-alternatives --auto python3
-RUN python3 --version
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
+
+RUN apt-get update
+RUN apt-get install -y  \
+        sudo \
         zsh openssh-server htop \
-        ca-certificates tar less \
-        python3-setuptools build-essential python3-dev python-pip python3-pip\
-        python3-wheel && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+        ca-certificates tar less
 
 
-# RUN bash -c "curl -fsSL https://code-server.dev/install.sh | sh"
+RUN bash -c "curl -fsSL https://code-server.dev/install.sh | sh"
 
 # Install base python3 packages
-RUN apt-get install -y python3-six
-RUN python2 -m pip install --user --upgrade pip
-RUN python3 -m pip install --user --upgrade pip
-RUN pip3 install --user --upgrade jupyterlab 
-RUN pip3 install kfp==1.1.0a1 && \
+RUN pip3 uninstall -y enum34
+RUN pip3 install --upgrade pip && \
+    pip3 install --upgrade jupyterlab && \
+    pip3 install kfp==1.1.0a1 && \
     pip3 install -U \
         easykubeflow \
         ipywidgets \
@@ -40,6 +32,8 @@ RUN pip3 install kfp==1.1.0a1 && \
 COPY ./requirements.txt .
 RUN pip3 install -r requirements.txt
 
+RUN curl -sL https://deb.nodesource.com/setup_15.x | bash -
+RUN apt-get install -y nodejs
 # Install Jupyter Lab Extensions
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN jupyter labextension install @jupyter-widgets/jupyterlab-manager --no-build && \
@@ -53,12 +47,14 @@ RUN jupyter labextension install @jupyter-widgets/jupyterlab-manager --no-build 
     rm -rf $HOME/.node-gyp && \
     rm -rf $HOME/.local 
 
+RUN useradd -rm -d /home/jovyan -s /bin/bash -g root -G sudo -u 1001 jovyan
 RUN echo "jovyan ALL=(ALL:ALL) NOPASSWD:ALL" > /etc/sudoers.d/jovyan
 
 COPY zshrc /zshrc
 COPY tmux.conf /tmux.conf
 RUN chown -R ${NB_USER}:users ${HOME}
 USER ${NB_USER}
+ENV HOME=/home/jovyan
 RUN sudo apt-get update && sudo apt-get install -y tmux
 RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" --skip-chsh --unattended \
   && git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions \
@@ -69,6 +65,7 @@ RUN sudo mv ${HOME}/.oh-my-zsh /
 WORKDIR ${HOME}
 SHELL ["/bin/zsh", "-c"]
 ENV SHELL=/bin/zsh
+RUN sudo apt-get install tini
 ENTRYPOINT ["tini", "--"]
 CMD ["zsh","-c", "sudo rm .zshrc .tmux.conf; \
         sudo rm -rf .oh-my-zsh;\
