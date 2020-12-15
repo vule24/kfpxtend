@@ -16,6 +16,8 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+RUN bash -c "curl -fsSL https://code-server.dev/install.sh | sh"
+
 # Install base python3 packages
 RUN pip3 uninstall -y enum34
 RUN pip3 install --upgrade pip && \
@@ -25,6 +27,7 @@ RUN pip3 install --upgrade pip && \
         easykubeflow \
         ipywidgets \
         jupyterlab-git \
+        jupyter-server-proxy jupyter-vscode-proxy pylint \
         kafka-python confluent-kafka \
         elasticsearch \
         pandas
