@@ -1,11 +1,15 @@
+import os
 import setuptools
 from pathlib import Path
+
+with open(os.path.join(os.getcwd(), 'configs/__VERSION__')) as fp:
+    __VERSION__ = str(fp.read())
 
 long_description = Path("README.md").read_text()
 
 setuptools.setup(
     name="kfpxtend",
-    version="1.0",
+    version=__VERSION__,
     author="Le Tuan Vu",
     author_email="ltnv24@gmail.com",
     description="High level of kubeflow SDK",
