@@ -1,4 +1,4 @@
-ARG IMAGE_TYPE="gpu"
+# ARG IMAGE_TYPE="gpu"
 # FROM gcr.io/kubeflow-images-public/tensorflow-2.1.0-notebook-${IMAGE_TYPE}:v-base-1caade5-1228430207824695301
 FROM python:3.8
 
@@ -22,15 +22,13 @@ RUN bash -c "curl -fsSL https://code-server.dev/install.sh | sh"
 RUN pip3 uninstall -y enum34
 RUN pip3 install --upgrade pip && \
     pip3 install --upgrade jupyterlab && \
-    pip3 install kfp==1.1.0a1 && \
+    pip3 install -U kfp && \
     pip3 install -U \
         easykubeflow \
         ipywidgets \
         jupyterlab-git \
         jupyter-server-proxy jupyter-vscode-proxy pylint
 
-COPY ./requirements.txt .
-RUN pip3 install -r requirements.txt
 
 RUN curl -sL https://deb.nodesource.com/setup_15.x | bash -
 RUN apt-get install -y nodejs

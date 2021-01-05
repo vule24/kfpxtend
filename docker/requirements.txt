@@ -3,21 +3,42 @@ apache-beam[gcp]
 numpy
 pandas
 scipy
+# HDF5 SUPPORT
+h5py
+biopython
+numba
+
 # visualization
 matplotlib
 seaborn
 plotly
 yellowbrick
 # cloud service
-google-cloud-bigquery
 google-cloud-storage
 pandas-gbq
-pyarrow
 cloudservice
 # Preprocessing
 category_encoders
 imbalanced-learn
+imgaug
+albumentations
+papermill
+gym
+pytorch-ignite
+
+
 # MLLIB
+gensim
+textblob
+wordcloud
+keras
+keras-tunner
+python-Levenshtein
+stop-words
+mxnet
+gluonnlp
+gluoncv
+
 scikit-learn
 lightgbm
 xgboost
@@ -30,6 +51,9 @@ scikit-surprise
 sklearn-pandas
 eli5
 shap
+
+# Outlier
+pyod
 
 # DeepLIB
 tensorflow

@@ -4,3 +4,4 @@ easykubeflow.egg-info/
 **/.ipynb_checkpoints/
 **/__pycache__/
 **/*.yaml
+.vscode

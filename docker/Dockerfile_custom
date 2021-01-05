@@ -1,0 +1,37 @@
+FROM asia.gcr.io/vinid-data-science-prod/vult5-notebook/notebook:1.7
+USER root
+RUN pip3 install -U pip
+RUN pip3 install torch torchvision
+RUN pip3 install -U pyod
+RUN pip3 install -U tensorflow
+RUN pip3 install -U keras
+RUN pip3 install -U shap
+RUN pip3 install -U wordcloud
+RUN pip3 install -U yellowbrick
+RUN pip3 install -U mlxtend
+RUN pip3 install -U xgboost
+RUN pip3 install -U lightgbm
+RUN pip3 install -U eli5
+RUN pip3 install -U scikit-surprise
+RUN pip3 install -U gensim
+RUN pip3 install -U annoy
+RUN pip3 install -U category_encoders
+RUN pip3 install -U faiss-cpu
+RUN pip3 install -U ray
+RUN pip3 install -U pytorch-ignite
+RUN pip3 install -U lime
+RUN pip3 install -U shap
+RUN pip3 install -U sklearn-pandas
+RUN pip3 install -U plotly
+RUN pip3 install -U imbalanced-learn
+RUN pip3 install -U datatable
+RUN pip3 install -U tqdm
+RUN pip3 install -U fastai
+RUN pip3 install -U optuna
+RUN pip3 install -U skorch
+RUN pip3 install -U papermill
+RUN pip3 install -U vaex
+RUN pip3 install -U dask
+RUN pip3 install -U dask_labextension
+RUN jupyter labextension install dask-labextension
+USER $NB_USER
