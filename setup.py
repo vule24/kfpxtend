@@ -1,17 +1,17 @@
 import setuptools
+from pathlib import Path
 
-with open("README.md", "r") as fh:
-    long_description = fh.read()
+long_description = Path("README.md").read_text()
 
 setuptools.setup(
-    name="easykubeflow",
-    version="0.0.10",
+    name="kfpxtend",
+    version="1.0",
     author="Le Tuan Vu",
     author_email="ltnv24@gmail.com",
     description="High level of kubeflow SDK",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    packages=['easykubeflow'],
+    packages=['kfpxtend'],
     install_requires=['kfp'],
     classifiers=[
         "Programming Language :: Python :: 3",

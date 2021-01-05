@@ -1,0 +1,14 @@
+Metadata-Version: 2.1
+Name: kfpxtend
+Version: 1.0
+Summary: High level of kubeflow SDK
+Home-page: UNKNOWN
+Author: Le Tuan Vu
+Author-email: ltnv24@gmail.com
+License: UNKNOWN
+Description: UNKNOWN
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown

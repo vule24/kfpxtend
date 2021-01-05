@@ -1,6 +1,6 @@
-# ARG IMAGE_TYPE="gpu"
-# FROM gcr.io/kubeflow-images-public/tensorflow-2.1.0-notebook-${IMAGE_TYPE}:v-base-1caade5-1228430207824695301
-FROM python:3.8
+ARG IMAGE_TYPE="gpu"
+FROM gcr.io/kubeflow-images-public/tensorflow-2.1.0-notebook-${IMAGE_TYPE}:v-base-1caade5-1228430207824695301
+# FROM python:3.8
 
 ARG NB_USER=jovyan
 

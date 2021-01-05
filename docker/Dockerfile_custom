@@ -34,4 +34,6 @@ RUN pip3 install -U vaex
 RUN pip3 install -U dask
 RUN pip3 install -U dask_labextension
 RUN jupyter labextension install dask-labextension
+RUN pip3 install -U kfpxtend
+RUN curl -fsSL https://code-server.dev/install.sh | sh
 USER $NB_USER
