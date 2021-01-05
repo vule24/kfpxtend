@@ -1,0 +1,29 @@
+name: Build and Publish autotonne
+
+on:
+  release:
+    types: [published]
+jobs:
+  build_and_publish_stable:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install --upgrade setuptools wheel requests
+      - name: Checkout last passing commit
+        uses: actions/checkout@v2
+      - name: Update __VERSION__
+        run: python configs/update_version.py --version ${{ github.ref }}
+      - name: Build stable distribution
+        run: |
+          rm -rf dist/*
+          python setup.py sdist bdist_wheel
+      - name: Publish distribution to PyPI
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          password: ${{secrets.kfpextend}}
