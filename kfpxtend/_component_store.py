@@ -101,9 +101,9 @@ class CloudComponentStore(kfp.components.ComponentStore):
                 if store_blob in blob.name and blob.name.endswith('component.yaml'):
                     yield 'gs://' + '/'.join([uri[0], blob.name]), blob.name[len(store_blob):-len('/component.yaml')]
     
-    def search(self, name:str, with_uri=False):
+    def search(self, name:str):
         for blob, component_name in self.list():
             if name.casefold() in blob.casefold():
-                print(f"name: {component_name}  uri: {blob}" if with_uri else f"name: {component_name}")
+                print(f"name: {component_name}  uri: {blob}")
 
 
