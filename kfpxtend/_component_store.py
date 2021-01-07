@@ -71,7 +71,7 @@ class CloudComponentStore(kfp.components.ComponentStore):
             url = url_search_prefix + path_suffix
             tried_locations.append(url)
             if url.startswith('gs://'):
-                component_content = _load_component_from_gcs(url)
+                component_content = load_component_from_gcs(url)
                 component_ref.url = url
                 component_ref.spec = comp._load_component_spec_from_yaml_or_zip_bytes(component_content)
                 return component_ref

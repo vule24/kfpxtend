@@ -1,6 +1,11 @@
 from kfp import dsl
 from pathlib import Path
+from datetime import datetime
+import zipfile
+import subprocess
 
+
+# TODO: Change ContainerOp to python_component
 
 class NotebookOp(dsl.ContainerOp):
     """Represents an op implemented by a Notebook and dependencies.
@@ -69,17 +74,16 @@ class NotebookOp(dsl.ContainerOp):
             raise ValueError("You need to provide an image.")
             
         kwargs['command'] = ['sh', '-c']
-        kwargs['arguments'] = ''.join(
+        kwargs['arguments'] = ' '.join(
             [(f'echo "SETUP:\n------" && '
               f'gsutil -m cp -r gs://{self.gcs_bucket}/{self.gcs_directory}/{self.zipname} . && '
               f'python3 -m zipfile -e {self.zipname} . && '
               f'echo "\nSOURCE:\n-------" && '
               f'python3 nb_convert.py && '
               f'echo "\nLOG:\n----" && '
-              f'python3 {self.notebook.with_suffix(".py").name} '), 
+              f'python3 {self.notebook.with_suffix(".py").name}'), 
              ' '.join(kwargs.get('arguments', []))]
         )
-        
         self.upload_all()
         super().__init__(**kwargs)
         
@@ -115,11 +119,13 @@ class NotebookOp(dsl.ContainerOp):
         for expression in params:
             lvalue = expression.split('=')[0].strip()
             lvalues.append(lvalue)
-
         add_arguments = casts = ''
         for arg in lvalues:
-            add_arguments += f"parser.add_argument('--{arg[0]}', type=str, required=True)\n"
-            casts += f"{arg[0]} = ast.literal_eval(args.{arg[0]})\n"
+            add_arguments += f"parser.add_argument('--{arg}', type=str, required=True)\n"
+            casts += ("try:\n"
+                      f"    {arg} = ast.literal_eval(args.{arg})\n"
+                      "except:\n"
+                      f"    {arg} = args.{arg}\n")
 
         main_src = ''.join([main_src, add_arguments, "args = parser.parse_args()\n", casts]) + '\n'.join(map(lambda x: x.strip('\n'), source))
         main_src = main_src.split('\n')
@@ -127,16 +133,16 @@ class NotebookOp(dsl.ContainerOp):
             if line.strip().startswith('!'):
                 bashcmd = line.strip()[1:]
                 main_src[i] = (f"bashcmd = '{bashcmd}'\n"
-                               f"process = subprocess.Popen(bashcmd.split(), stdout=subprocess.PIPE)\n"
-                               f"output, _ = process.communicate()\n"
-                               f"print(output.decode('utf-8'))\n")
+                            f"process = subprocess.Popen(bashcmd.split(), stdout=subprocess.PIPE)\n"
+                            f"output, _ = process.communicate()\n"
+                            f"print(output.decode('utf-8'))\n")
         main_src = '\n'.join(main_src)        
         nb_path.with_suffix('.py').write_text(main_src)
 
         n_lineno = len(str(len(main_src.split('\n'))))
         for i, line in enumerate(main_src.split('\n')):
             print(f'{i:>{n_lineno}}| {line}')
-            
+                    
     def upload_all(self):
         with zipfile.ZipFile(f'/tmp/{self.zipname}', 'w', zipfile.ZIP_DEFLATED) as zip_obj:
             zip_obj.write(self.notebook)
@@ -218,17 +224,16 @@ class PythonFileOp(dsl.ContainerOp):
             raise ValueError("You need to provide an image.")
             
         kwargs['command'] = ['sh', '-c']
-        kwargs['arguments'] = ''.join(
-            [('echo "SETUP:\n------" && '
-              f'gsutil -m cp -r gs://{self.gcs_bucket}/{self.gcs_directory}/{self.zipname} . && '
-              f'python3 -m zipfile -e {self.zipname} . && '
-              f'echo "\nSOURCE:\n-------" && '
-              f'python3 nb_convert.py && '
-              f'echo "\nLOG:\n----" && '
-              f'python3 src_{self.pyfile.name} '), 
+        kwargs['arguments'] = ' '.join([
+            ('echo "SETUP:\n------" && '
+             f'gsutil -m cp -r gs://{self.gcs_bucket}/{self.gcs_directory}/{self.zipname} . && '
+             f'python3 -m zipfile -e {self.zipname} . && '
+             f'echo "\nSOURCE:\n-------" && '
+             f'python3 nb_convert.py && '
+             f'echo "\nLOG:\n----" && '
+             f'python3 src_{self.pyfile.name}'), 
              ' '.join(kwargs.get('arguments', []))]
         )
-        
         self.upload_all()
         super().__init__(**kwargs)
         
@@ -269,8 +274,11 @@ class PythonFileOp(dsl.ContainerOp):
 
         add_arguments = casts = ''
         for arg in reversed(lvalues):
-            add_arguments += f"parser.add_argument('--{arg[0]}', type=str, required=True)\n"
-            casts += f"{arg[0]} = ast.literal_eval(args.{arg[0]})\n"
+            add_arguments += f"parser.add_argument('--{arg}', type=str, required=True)\n"
+            casts += ("try:\n"
+                      f"    {arg} = ast.literal_eval(args.{arg})\n"
+                      "except:\n"
+                      f"    {arg} = args.{arg}\n")
 
         main_src = '\n'.join(py).format(''.join([main_src, add_arguments, "args = parser.parse_args()\n", casts]))
 
