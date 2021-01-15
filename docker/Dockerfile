@@ -1,6 +1,6 @@
-ARG IMAGE_TYPE="gpu"
-FROM gcr.io/kubeflow-images-public/tensorflow-2.1.0-notebook-${IMAGE_TYPE}:v-base-1caade5-1228430207824695301
-# FROM python:3.8
+# ARG IMAGE_TYPE="gpu"
+# FROM gcr.io/kubeflow-images-public/tensorflow-2.1.0-notebook-${IMAGE_TYPE}:v-base-1caade5-1228430207824695301
+FROM python:3.8
 
 ARG NB_USER=jovyan
 
@@ -8,12 +8,12 @@ ARG NB_USER=jovyan
 
 USER root
 
-
 RUN apt-get update
 RUN apt-get install -y  \
         sudo \
         zsh openssh-server htop \
-        ca-certificates tar less
+        ca-certificates tar less \
+        tree tmux vim nano
 
 
 RUN bash -c "curl -fsSL https://code-server.dev/install.sh | sh"
@@ -21,10 +21,9 @@ RUN bash -c "curl -fsSL https://code-server.dev/install.sh | sh"
 # Install base python3 packages
 RUN pip3 uninstall -y enum34
 RUN pip3 install --upgrade pip && \
-    pip3 install --upgrade jupyterlab && \
-    pip3 install -U kfp && \
     pip3 install -U \
-        easykubeflow \
+        jupyterlab==2.2.9 \
+        kfp \
         ipywidgets \
         jupyterlab-git \
         jupyter-server-proxy jupyter-vscode-proxy pylint
@@ -50,10 +49,10 @@ RUN echo "jovyan ALL=(ALL:ALL) NOPASSWD:ALL" > /etc/sudoers.d/jovyan
 
 COPY zshrc /zshrc
 COPY tmux.conf /tmux.conf
+COPY setup.sh /setup.sh
 RUN chown -R ${NB_USER}:users ${HOME}
 USER ${NB_USER}
 ENV HOME=/home/jovyan
-RUN sudo apt-get update && sudo apt-get install -y tmux
 RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" --skip-chsh --unattended \
   && git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions \
   && git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
@@ -65,11 +64,7 @@ SHELL ["/bin/zsh", "-c"]
 ENV SHELL=/bin/zsh
 RUN sudo apt-get install tini
 ENTRYPOINT ["tini", "--"]
-CMD ["zsh","-c", "sudo rm .zshrc .tmux.conf; \
-        sudo rm -rf .oh-my-zsh;\
-        sudo mv /zshrc ${HOME}/.zshrc; sudo mv /tmux.conf ${HOME}/.tmux.conf; \
-        sudo mv /.oh-my-zsh ${HOME}/; \
-        sudo chown ${NB_USER}:users ${HOME}/.zshrc; sudo chown ${NB_USER}:users ${HOME}/.tmux.conf; \
-        jupyter lab --notebook-dir=${HOME} --ip=0.0.0.0 --no-browser \
-            --allow-root --port=8888 --LabApp.token='' --LabApp.password='' \
-            --LabApp.allow_origin='*' --LabApp.base_url=${NB_PREFIX}"]
+CMD ["zsh","-c", "/setup.sh; \  
+    jupyter lab --notebook-dir=${HOME} --ip=0.0.0.0 --no-browser \
+        --allow-root --port=8888 --LabApp.token='' --LabApp.password='' \
+        --LabApp.allow_origin='*' --LabApp.base_url=${NB_PREFIX}"]
