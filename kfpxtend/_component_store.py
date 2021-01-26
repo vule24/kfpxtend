@@ -16,8 +16,8 @@ def load_component_from_gcs(uri):
 
 
 class CloudComponentStore(kfp.components.ComponentStore):
-    def __init__(self, url_search_prefixes:list=None):
-        super().__init__(url_search_prefixes=url_search_prefixes)
+    def __init__(self, local_search_paths=None, url_search_prefixes=None):
+        super().__init__(local_search_paths=local_search_paths, url_search_prefixes=url_search_prefixes)
     
     def _load_component_spec_in_component_ref(
         self,
@@ -89,19 +89,22 @@ class CloudComponentStore(kfp.components.ComponentStore):
         raise RuntimeError('Component {} was not found. Tried the following locations:\n{}'.format(name, '\n'.join(tried_locations)))
         
     def list(self):
+        super().search('')
         from google.cloud import storage
         client = storage.Client()
+        gcs_list = []
         for url_search_prefix in self.url_search_prefixes:
             uri = url_search_prefix[len('gs://'):].split('/')
-            bucket = client.bucket(uri[0])
             store_blob = '/'.join(uri[1:])
-            blobs = client.list_blobs(bucket_or_name=uri[0], prefix = '/'.join(uri[1:]), delimiter = None)
+            blobs = client.list_blobs(bucket_or_name=uri[0], prefix=store_blob, delimiter=None)
 
             for blob in blobs:
                 if store_blob in blob.name and blob.name.endswith('component.yaml'):
-                    yield 'gs://' + '/'.join([uri[0], blob.name]), blob.name[len(store_blob):-len('/component.yaml')]
+                    gcs_list.append(['gs://' + '/'.join([uri[0], blob.name]), blob.name[len(store_blob):-len('/component.yaml')]])
+        return gcs_list
     
     def search(self, name:str):
+        super().search(name)
         for blob, component_name in self.list():
             if name.casefold() in blob.casefold():
                 print(f"name: {component_name}  uri: {blob}")
