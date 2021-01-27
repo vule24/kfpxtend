@@ -17,4 +17,4 @@ kfp.Client.upload_pipeline_version = upload_pipeline_version
 kfp.dsl.NotebookOp = NotebookOp
 kfp.dsl.PythonFileOp = PythonFileOp
 kfp.components.load_component_from_gcs = load_component_from_gcs
-kfp.components.CloudComponentStore = CloudComponentStore
+kfp.components.GSComponentStore = GSComponentStore

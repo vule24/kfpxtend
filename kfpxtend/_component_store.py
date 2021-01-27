@@ -1,11 +1,7 @@
 import copy
-import requests
 import kfp
 import kfp.components._components as comp
 from kfp.components._structures import ComponentReference
-from pathlib import Path
-from typing import Callable, Iterable
-
 
 def load_component_from_gcs(uri):
     from google.cloud import storage
@@ -15,8 +11,9 @@ def load_component_from_gcs(uri):
     return blob.download_as_string()
 
 
-class CloudComponentStore(kfp.components.ComponentStore):
-    def __init__(self, local_search_paths=None, url_search_prefixes=None):
+class GSComponentStore(kfp.components.ComponentStore):
+    def __init__(self, local_search_paths=None, url_search_prefixes=None, gcs_search_prefixes=None):
+        self.gcs_search_prefixes = gcs_search_prefixes
         super().__init__(local_search_paths=local_search_paths, url_search_prefixes=url_search_prefixes)
     
     def _load_component_spec_in_component_ref(
@@ -56,45 +53,24 @@ class CloudComponentStore(kfp.components.ComponentStore):
         else:
             path_suffix = name + '/' + self._component_file_name
 
-        #Trying local search paths
-        for local_search_path in self.local_search_paths:
-            component_path = Path(local_search_path, path_suffix)
-            tried_locations.append(str(component_path))
-            if component_path.is_file():
-                # TODO: Verify that the content matches the digest (if specified).
-                component_ref._local_path = str(component_path)
-                component_ref.spec = comp._load_component_spec_from_file(str(component_path))
-                return component_ref
-
         #Trying URL prefixes
-        for url_search_prefix in self.url_search_prefixes:
-            url = url_search_prefix + path_suffix
-            tried_locations.append(url)
-            if url.startswith('gs://'):
-                component_content = load_component_from_gcs(url)
-                component_ref.url = url
+        for gcs_search_prefix in self.gcs_search_prefixes:
+            uri = gcs_search_prefix.rstrip('/') + '/' + path_suffix
+            tried_locations.append(uri)
+            if uri.startswith('gs://'):
+                component_content = load_component_from_gcs(uri)
                 component_ref.spec = comp._load_component_spec_from_yaml_or_zip_bytes(component_content)
                 return component_ref
-            try:
-                response = requests.get(url, auth=self._auth) #Does not throw exceptions on bad status, but throws on dead domains and malformed URLs. Should we log those cases?
-                response.raise_for_status()
-            except:
-                continue
-            if response.content:
-                # TODO: Verify that the content matches the digest (if specified).
-                component_ref.url = url
-                component_ref.spec = comp._load_component_spec_from_yaml_or_zip_bytes(response.content)
-                return component_ref
 
-        raise RuntimeError('Component {} was not found. Tried the following locations:\n{}'.format(name, '\n'.join(tried_locations)))
+        return super()._load_component_spec_in_component_ref(component_ref)
         
     def list(self):
         super().search('')
         from google.cloud import storage
         client = storage.Client()
         gcs_list = []
-        for url_search_prefix in self.url_search_prefixes:
-            uri = url_search_prefix[len('gs://'):].split('/')
+        for gcs_search_prefix in self.gcs_search_prefixes:
+            uri = gcs_search_prefix[len('gs://'):].split('/')
             store_blob = '/'.join(uri[1:])
             blobs = client.list_blobs(bucket_or_name=uri[0], prefix=store_blob, delimiter=None)
 
