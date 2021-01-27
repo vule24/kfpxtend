@@ -12,8 +12,8 @@ def load_component_from_gcs(uri):
 
 
 class GSComponentStore(kfp.components.ComponentStore):
-    def __init__(self, local_search_paths=None, url_search_prefixes=None, gcs_search_prefixes=None):
-        self.gcs_search_prefixes = gcs_search_prefixes
+    def __init__(self, local_search_paths=None, url_search_prefixes=None, gs_search_prefixes=None):
+        self.gs_search_prefixes = gs_search_prefixes
         super().__init__(local_search_paths=local_search_paths, url_search_prefixes=url_search_prefixes)
     
     def _load_component_spec_in_component_ref(
@@ -54,8 +54,8 @@ class GSComponentStore(kfp.components.ComponentStore):
             path_suffix = name + '/' + self._component_file_name
 
         #Trying URL prefixes
-        for gcs_search_prefix in self.gcs_search_prefixes:
-            uri = gcs_search_prefix.rstrip('/') + '/' + path_suffix
+        for gs_search_prefix in self.gs_search_prefixes:
+            uri = gs_search_prefix.rstrip('/') + '/' + path_suffix
             tried_locations.append(uri)
             if uri.startswith('gs://'):
                 component_content = load_component_from_gcs(uri)
@@ -69,8 +69,8 @@ class GSComponentStore(kfp.components.ComponentStore):
         from google.cloud import storage
         client = storage.Client()
         gcs_list = []
-        for gcs_search_prefix in self.gcs_search_prefixes:
-            uri = gcs_search_prefix[len('gs://'):].split('/')
+        for gs_search_prefix in self.gs_search_prefixes:
+            uri = gs_search_prefix[len('gs://'):].split('/')
             store_blob = '/'.join(uri[1:])
             blobs = client.list_blobs(bucket_or_name=uri[0], prefix=store_blob, delimiter=None)
 
