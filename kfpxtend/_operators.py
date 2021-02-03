@@ -300,3 +300,5 @@ class PythonFileOp(dsl.ContainerOp):
         process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
         
         return self
+    
+    

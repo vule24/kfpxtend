@@ -2,6 +2,7 @@ import kfp
 from ._client import *
 from ._operators import *
 from ._component_store import *
+from ._components import *
 from ._auth import *
 
 kfp.Client.page_size = 500
@@ -18,3 +19,4 @@ kfp.dsl.NotebookOp = NotebookOp
 kfp.dsl.PythonFileOp = PythonFileOp
 kfp.components.load_component_from_gcs = load_component_from_gcs
 kfp.components.GSComponentStore = GSComponentStore
+
