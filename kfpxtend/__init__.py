@@ -15,8 +15,3 @@ kfp.Client.delete_experiment_by_name = delete_experiment_by_name
 kfp.Client.delete_run_by_name = delete_run_by_name
 kfp.Client.delete_runs_by_experiment = delete_runs_by_experiment
 kfp.Client.upload_pipeline_version = upload_pipeline_version
-kfp.dsl.NotebookOp = NotebookOp
-kfp.dsl.PythonFileOp = PythonFileOp
-kfp.components.load_component_from_gcs = load_component_from_gcs
-kfp.components.GSComponentStore = GSComponentStore
-

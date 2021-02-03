@@ -15,6 +15,27 @@ import subprocess
 
 
 class NotebookComponent:
+    """Notebook Component is used to create a component by submitting a notebook and its dependencies to GCS then download, extract the archived zip file and run it at runtime.
+    Notebook outputs are visualized as static HTML which could be retrieved at `Artifact` Tab or `Run output` Tab in the Kubeflow Pipeline UI.
+    Parameters
+    ----------
+    notebook: str
+        Path to notebook
+    dependencies: str
+        Path to dependencies
+    gs_path: str
+        GCS path to store archived zip file
+    output_component_file: Optional[str]
+        Export yaml format to file
+    base_image: Optional[str]
+        Image to run notebook
+    packages_to_install: Optional[List[str]]
+        Additional packages to install at runtime
+    params_schema: Optional[Dict[str, Any]]
+        Schema for parameters that are defined at notebook cell with "parameters" tag
+    remove_nb_inputs: bool
+        True to exclude input / input prompt. Default True
+    """
     def __init__(
         self, 
         notebook: str,
@@ -48,6 +69,16 @@ class NotebookComponent:
                     
         
     def load_component(self, version: Optional[str]=None):
+        """Submit notebook to GCS and create Kubeflow Pipeline component.
+        Parameters
+        ----------
+        version: Optional[str]
+            Defined version of Notebook archive zip file. If not defined, version would be "YYYYMMDD_HHMMSS"
+        
+        Return
+        ------
+        KF Component
+        """
         # Set version for notebook archive
         version = version or datetime.now().strftime('%Y%m%d_%H%M%S')
         
