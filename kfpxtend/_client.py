@@ -248,3 +248,9 @@ def upload_pipeline_version(self, filepath, pipeline_name:str, version:str=None)
             name=version)
         print(f'Uploaded version for {pipeline_name}')
 
+
+def create_pipeline_workflow(self, parameter_defaults, pipeline, op_transformers=None, pipeline_conf=None):
+    workflow = self.__create_pipeline_workflow(parameter_defaults, pipeline, op_transformers, pipeline_conf)
+    if pipeline_conf.gcp_sa_name:
+        workflow['spec']['serviceAccountName'] = pipeline_conf.gcp_sa_name
+    return workflow
